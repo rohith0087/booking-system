@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Appointment</title>
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .form-control {
+      padding: 0.75rem 1rem;
+      font-size: 1.2rem;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .form-control:focus {
+      outline: none;
+      box-shadow: none;
+      border-color: #007bff;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+    .container {
+      max-width: 600px;
+    }
+    .btn {
+      padding: 0.75rem 1.5rem;
+      font-size: 1.2rem;
+    }
+    .navbar .form-inline .form-control {
+      padding: 0.55rem 0.5rem;
+      font-size: 0.95rem;
+    }
+    .navbar .btn {
+      padding: 0.55rem 0.5rem;
+      font-size: 0.95rem;
+    }
+    .suggestions {
+      border: 1px solid #ddd;
+      border-top: none;
+      max-height: 150px;
+      overflow-y: auto;
+      position: absolute;
+      z-index: 1000;
+      width: 100%;
+    }
+    .suggestion-item {
+      padding: 0.75rem;
+      cursor: pointer;
+      background: #fff;
+    }
+    .suggestion-item:hover {
+      background: #f1f1f1;
+    }
+    .form-step {
+      display: none;
+    }
+    .form-step.active {
+      display: block;
+    }
+    .bottom-toolbar {
+      display: flex;
+      justify-content: space-between;
+      background-color: #fff;
+      padding: 0.5rem 1rem;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .bottom-toolbar a {
+      text-align: center;
+      color: #007bff;
+      text-decoration: none;
+      flex: 1;
+    }
+    .bottom-toolbar a i {
+      font-size: 1.5rem;
+    }
+    .bottom-toolbar a:not(:last-child) {
+      margin-right: 5rem;
+    }
+    .bottom-toolbar a:first-child {
+      margin-left: 1rem;
+    }
+    @media (min-width: 769px) {
+      .bottom-toolbar {
+        display: none;
+      }
+    }
+    .slide-menu {
+      position: fixed;
+      top: 0;
+      right: -250px;
+      width: 250px;
+      height: 100%;
+      background-color: rgba(84, 162, 246, 0.95);
+      transition: right 0.3s ease;
+      padding: 1rem;
+      box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+      z-index: 1050;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .slide-menu.active {
+      right: 0;
+    }
+    .slide-menu a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.2rem;
+      padding: 0.5rem;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+      margin-bottom: 0.5rem;
+    }
+    .slide-menu a:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    .slide-menu form {
+      margin-top: 1rem;
+    }
+    .slide-menu .form-control {
+      margin-bottom: 0.5rem;
+    }
+    .slide-menu .btn {
+      background-color: #fff;
+      color: #013e14;
+    }
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: none;
+      z-index: 1040;
+    }
+    .overlay.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/index">
+        <img src="images/logo.jpeg" alt="logo" style="height: 50px;">
+    </a>
+    <div class="collapse navbar-collapse justify-content-center">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="appointmentsDropdown" role="button" data-toggle="dropdown">
+            Appointment
+          </a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="/new-appointment">New Appointment</a>
+            <a class="dropdown-item" href="/filter-appointments">Total Appointments</a>
+            <a class="dropdown-item" href="/not-booked">Not Booked</a>
+          </div>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="salesDropdown" role="button" data-toggle="dropdown">
+            Sales
+          </a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="/todays-Shiftings">Today's Shiftings</a>
+            <a class="dropdown-item" href="/total-bookings">Total Shiftings</a>
+            <a class="dropdown-item" href="/total-sales">Total Sales</a>
+          </div>
+        </li>
+      </ul>
+      <form class="form-inline my-2 my-lg-0 mx-auto">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+      </form>
+      <button class="btn btn-outline-secondary ml-2" onclick="goToSettings()">Settings</button>
+      <button class="btn btn-outline-danger ml-2" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="container mt-4">
+    <h2 class="mb-4">New Appointment</h2>
+    <form id="appointmentForm">
+      <input type="hidden" id="appointmentId">
+      
+      <div class="form-step active" id="step-1">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input type="text" class="form-control" id="name" name="name" placeholder="Enter name" required>
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone Number</label><br>
+          <input type="tel" class="form-control" id="phone" name="phone" placeholder="Phone number" required>
+        </div>
+        <div class="form-group position-relative">
+          <label for="addressFrom">Address From</label>
+          <input type="text" class="form-control" id="addressFrom" name="addressFrom" placeholder="Enter starting address" required>
+        </div>
+        <div class="form-group position-relative">
+          <label for="addressTo">Address To</label>
+          <input type="text" class="form-control" id="addressTo" name="addressTo" placeholder="Enter destination address" required>
+        </div>
+        <button type="button" class="btn btn-primary" id="nextStep">Next</button>
+      </div>
+      
+      <div class="form-step" id="step-2">
+        <div class="form-group">
+          <label for="date">Date</label>
+          <input type="date" class="form-control" id="date" name="date" required>
+        </div>
+        <div class="form-group">
+          <label for="branch">Branch</label>
+          <select class="form-control" id="branch" name="branch" required>
+            <option value="Vijayawada">Vijayawada</option>
+            <option value="Vizag">Vizag</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="type_of_booking">Type of Booking</label><br>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="type_of_booking" id="local" value="local">
+            <label class="form-check-label" for="local">Local</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="type_of_booking" id="inter_city" value="inter_city">
+            <label class="form-check-label" for="inter_city">Inter-City</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="communicationMethod">Communication Method</label><br>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="communicationMethod" id="whatsapp" value="whatsapp" checked>
+            <label class="form-check-label" for="whatsapp">WhatsApp</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="communicationMethod" id="sms" value="sms">
+            <label class="form-check-label" for="sms">SMS</label>
+          </div>
+        </div>
+        <button type="button" class="btn btn-secondary" id="prevStep">Back</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="bottom-toolbar d-block d-sm-none">
+    <a href="/filter-appointments"><i class="fas fa-calendar-alt"></i></a>
+    <a href="/total-bookings"><i class="fas fa-truck"></i></a>
+    <a href="/index"><i class="fas fa-home"></i></a>
+    <a href="#" onclick="openMobileMenu()"><i class="fas fa-bars"></i></a>
+  </div>
+
+  <div class="slide-menu" id="slideMenu">
+    <a href="/new-appointment">New Appointment</a>
+    <a href="/filter-appointments">Total Appointments</a>
+    <a href="/not-booked">Not Booked</a>
+    <a href="/view-all-appointments">DataBase</a>
+    <a href="/todays-Shiftings">Today's Shiftings</a>
+    <a href="/total-bookings">Total Shiftings</a>
+    <a href="/total-sales">Total Sales</a>
+    <a href="/manage-schedules">Manage Schedules</a>
+    <form class="d-flex mt-3" onsubmit="handleSearch(event)">
+      <input class="form-control me-2" type="search" placeholder="" aria-label="Search" id="searchQuery">
+      <button class="btn btn-outline-light" type="submit">Search</button>
+    </form>
+    <a href="/settings" class="mt-3">Settings</a>
+    <a href="/logout" class="mt-3">Logout</a>
+  </div>
+
+  <div class="overlay" id="overlay" onclick="closeMobileMenu()"></div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const phoneInputField = document.querySelector("#phone");
+      const phoneInput = window.intlTelInput(phoneInputField, {
+        initialCountry: "in",
+        preferredCountries: ["in", "us", "gb"],
+        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
+      });
+
+      const nextStepBtn = document.getElementById('nextStep');
+      const prevStepBtn = document.getElementById('prevStep');
+      const step1 = document.getElementById('step-1');
+      const step2 = document.getElementById('step-2');
+
+      nextStepBtn.addEventListener('click', function() {
+        step1.classList.remove('active');
+        step2.classList.add('active');
+      });
+
+      prevStepBtn.addEventListener('click', function() {
+        step2.classList.remove('active');
+        step1.classList.add('active');
+      });
+
+      document.getElementById('appointmentForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const id = document.getElementById('appointmentId').value;
+        const name = document.getElementById('name').value;
+        const phone = phoneInput.getNumber();
+        const addressFrom = document.getElementById('addressFrom').value;
+        const addressTo = document.getElementById('addressTo').value;
+        const date = document.getElementById('date').value;
+        const branch = document.getElementById('branch').value;
+        const communicationMethod = document.querySelector('input[name="communicationMethod"]:checked').value;
+        const type_of_booking = document.querySelector('input[name="type_of_booking"]:checked')?.value;
+
+        // Validate phone number
+        if (!phoneInput.isValidNumber() || phoneInput.getNumber().length !== 13) {
+          alert('Please enter a valid 10-digit phone number.');
+          return;
+        }
+
+        // Validate type of booking
+        if (!type_of_booking) {
+          alert('Please select the type of booking.');
+          return;
+        }
+
+        const appointmentData = { id, name, phone, addressFrom, addressTo, date, branch, communicationMethod, type_of_booking };
+
+        const url = id ? `/appointments/${id}` : '/appointments';
+        const method = id ? 'PUT' : 'POST';
+
+        fetch(url, {
+          method: method,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(appointmentData),
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.message) {
+            alert(data.message);
+            window.location.href = '/filter-appointments';
+          } else {
+            throw new Error('Unexpected response format');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('An error occurred while processing your request.');
+        });
+      });
+
+      function logout() {
+        fetch('/logout')
+          .then(response => {
+            if (response.ok) {
+              window.location.href = '/';
+            } else {
+              alert('Logout failed');
+            }
+          })
+          .catch(error => {
+            console.error('Error logging out:', error);
+          });
+      }
+
+      function goToSettings() {
+        window.location.href = '/settings';
+      }
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const appointmentId = urlParams.get('id');
+      if (appointmentId) {
+        fetch(`/appointments/${appointmentId}`)
+          .then(response => response.json())
+          .then(data => {
+            document.getElementById('appointmentId').value = data.id;
+            document.getElementById('name').value = data.name;
+            document.getElementById('phone').value = data.phone;
+            document.getElementById('addressFrom').value = data.address_from;
+            document.getElementById('addressTo').value = data.address_to;
+            document.getElementById('date').value = data.date.split('T')[0]; // Format date for input[type=date]
+            document.getElementById('branch').value = data.branch;
+            document.querySelector(`input[name="communicationMethod"][value="${data.communication_method}"]`).checked = true;
+            document.querySelector(`input[name="type_of_booking"][value="${data.type_of_booking}"]`).checked = true;
+
+            step1.classList.remove('active');
+            step2.classList.add('active');
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while loading the appointment details.');
+          });
+      }
+
+      // Set default date to today in IST
+      const indianTimeZone = 'Asia/Kolkata';
+      const nowInIST = new Date(new Date().toLocaleString('en-US', { timeZone: indianTimeZone }));
+      const today = nowInIST.toISOString().split('T')[0];
+      document.getElementById('date').value = today;
+      document.getElementById('date').setAttribute('min', today);
+    });
+
+    function openMobileMenu() {
+      document.getElementById('slideMenu').classList.add('active');
+      document.getElementById('overlay').classList.add('active');
+    }
+
+    function closeMobileMenu() {
+      document.getElementById('slideMenu').classList.remove('active');
+      document.getElementById('overlay').classList.remove('active');
+    }
+
+    function handleSearch(event) {
+      event.preventDefault();
+      const searchQuery = document.getElementById('searchQuery').value;
+      window.location.href = `/filter-appointments?name=${encodeURIComponent(searchQuery)}`;
+    }
+  </script>
+</body>
+</html>

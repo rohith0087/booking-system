@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Send Actions</title>
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .navbar {
+      margin-bottom: 20px;
+    }
+    .btn-group-vertical {
+      max-width: 300px;
+      margin: 0 auto;
+    }
+    .btn-group-vertical .btn {
+      background-color: #d8dce1;
+      color: #000000;
+      border: none;
+      transition: all 0.3s ease;
+    }
+    .btn-group-vertical .btn:hover {
+      background-color: #58a0ed;
+    }
+    .modal-header {
+      background-color: #007bff;
+      color: #fff;
+    }
+    .modal-content {
+      border-radius: 10px;
+    }
+    .modal-body {
+      padding: 20px;
+    }
+    .form-control {
+      margin-bottom: 10px;
+    }
+    .container {
+      max-width: 600px;
+    }
+    .btn-primary {
+      background-color: #007bff;
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #007bff;
+    }
+    .animate__animated {
+      animation-duration: 1s;
+      animation-fill-mode: both;
+    }
+    .animate__fadeInUp {
+      animation-name: fadeInUp;
+    }
+    @keyframes fadeInUp {
+      from {
+        transform: translate3d(0, 100%, 0);
+        opacity: 0;
+      }
+      to {
+        transform: translate3d(0, 0, 0);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand animate__animated animate__bounceInLeft" href="/index">
+      <img src="images/logo.jpeg" alt="logo" style="height: 40px;">
+    </a>
+    <div class="collapse navbar-collapse justify-content-center">
+      <ul class="navbar-nav mr-auto">
+        <!-- Add your navigation items here -->
+      </ul>
+      <button class="btn btn-outline-secondary ml-2">Settings</button>
+      <button class="btn btn-outline-danger ml-2" id="logoutButton " onclick="goToSettings()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="container mt-4 animate__animated animate__fadeInUp">
+    <button class="btn btn-primary mb-3" onclick="window.history.back()">Back</button>
+    <h2 class="mb-4 text-center">Send Actions</h2>
+    <div class="btn-group-vertical w-100">
+      <button class="btn mb-2" data-toggle="modal" data-target="#localDriverModal">Local Driver</button>
+      <button class="btn mb-2" data-toggle="modal" data-target="#sendToDriverModal">Send to Driver</button>
+      <button class="btn mb-2" data-toggle="modal" data-target="#chatWithCustomerModal">Chat with Customer</button>
+      <button class="btn mb-2" onclick="sendReviewLink()">Send Review Link</button>
+    </div>
+  </div>
+
+  <!-- Local Driver Modal -->
+  <div class="modal fade" id="localDriverModal" tabindex="-1" aria-labelledby="localDriverModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="localDriverModalLabel">Assign Local Driver</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="localDriverForm">
+            <div class="form-group">
+              <label for="driverName">Select Driver</label>
+              <select class="form-control" id="driverName" required>
+                <option value="Ravi">bunny - +919490228545</option>
+                <option value="chintu">Chintu - +919441471234</option>
+                <option value="Ravi2">Ravi2 - +919441471234</option>
+                <option value="chintu2">Chintu2 - +919441471234</option>
+              </select>
+            </div>
+            <button type="button" class="btn btn-primary w-100" onclick="assignLocalDriver()">Assign Driver</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Send to Driver Modal -->
+  <div class="modal fade" id="sendToDriverModal" tabindex="-1" aria-labelledby="sendToDriverModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="sendToDriverModalLabel">Send to Driver</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="sendToDriverForm">
+            <div class="form-group">
+              <label for="customerNumber">Customer Number</label>
+              <input type="text" class="form-control" id="customerNumber" readonly>
+            </div>
+            <div class="form-group">
+              <label for="driverNameInput">Driver Name</label>
+              <input type="text" class="form-control" id="driverNameInput" required>
+            </div>
+            <div class="form-group">
+              <label for="driverNumber">Driver Number</label>
+              <input type="tel" class="form-control" id="driverNumber" required>
+            </div>
+            <div class="form-group">
+              <label for="notes">Notes</label>
+              <textarea class="form-control" id="notes" rows="3"></textarea>
+            </div>
+            <button type="button" class="btn btn-primary w-100" onclick="sendToDriver()">Send</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat with Customer Modal -->
+  <div class="modal fade" id="chatWithCustomerModal" tabindex="-1" aria-labelledby="chatWithCustomerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="chatWithCustomerModalLabel">Chat with Customer</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="chatWithCustomerForm">
+            <div class="form-group">
+              <label for="customerChatNumber">Customer Number</label>
+              <input type="text" class="form-control" id="customerChatNumber" readonly>
+            </div>
+            <div class="form-group">
+              <label for="chatMessage">Message</label>
+              <textarea class="form-control" id="chatMessage" rows="3" required></textarea>
+            </div>
+            <button type="button" class="btn btn-primary w-100" onclick="chatWithCustomer()">Send</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    function assignLocalDriver() {
+      const driverName = document.getElementById('driverName').value;
+      const appointmentId = getQueryParam('appointmentId');
+      // Add logic to fetch and handle appointment details and send messages
+      $.post('/assign-local-driver', { appointmentId, driverName }, (response) => {
+        alert(response.message);
+      }).fail((error) => {
+        alert('Error assigning local driver');
+        console.error(error);
+      });
+      // Close modal
+      $('#localDriverModal').modal('hide');
+    }
+
+    function sendToDriver() {
+      const customerNumber = document.getElementById('customerNumber').value;
+      const driverName = document.getElementById('driverNameInput').value;
+      const driverNumber = document.getElementById('driverNumber').value;
+      const notes = document.getElementById('notes').value;
+      const appointmentId = getQueryParam('appointmentId');
+      // Add logic to send messages
+      $.post('/send-to-driver', { appointmentId, driverName, driverNumber, notes }, (response) => {
+        alert(response.message);
+      }).fail((error) => {
+        alert('Error sending to driver');
+        console.error(error);
+      });
+      // Close modal
+      $('#sendToDriverModal').modal('hide');
+    }
+
+    function chatWithCustomer() {
+      const customerNumber = document.getElementById('customerChatNumber').value;
+      const chatMessage = document.getElementById('chatMessage').value;
+      const appointmentId = getQueryParam('appointmentId');
+      // Add logic to send message
+      $.post('/chat-with-customer', { appointmentId, phoneNumber: customerNumber, message: chatMessage }, (response) => {
+        alert(response.message);
+      }).fail((error) => {
+        alert('Error chatting with customer');
+        console.error(error);
+      });
+      // Close modal
+      $('#chatWithCustomerModal').modal('hide');
+    }
+
+    function sendReviewLink() {
+      const appointmentId = getQueryParam('appointmentId');
+      // Add logic to send the review link to the customer
+      $.post('/send-review-link', { appointmentId }, (response) => {
+        alert(response.message);
+      }).fail((error) => {
+        alert('Error sending review link');
+        console.error(error);
+      });
+    }
+
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return decodeURIComponent(urlParams.get(param));
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const customerNumber = getQueryParam('customerNumber');
+      document.getElementById('customerNumber').value = customerNumber;
+      document.getElementById('customerChatNumber').value = customerNumber;
+    });
+  </script>
+</body>
+</html>

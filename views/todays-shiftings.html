@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Today's Shiftings</title>
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .bottom-toolbar {
+      display: flex;
+      justify-content: space-between;
+      background-color: #fff;
+      padding: 0.5rem 1rem;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .bottom-toolbar a {
+      text-align: center;
+      color: #007bff;
+      text-decoration: none;
+      flex: 1;
+    }
+    .bottom-toolbar a i {
+      font-size: 1.5rem;
+    }
+    .bottom-toolbar a:not(:last-child) {
+      margin-right: 5rem;
+    }
+    .bottom-toolbar a:first-child {
+      margin-left: 1rem;
+    }
+    @media (min-width: 769px) {
+      .bottom-toolbar {
+        display: none;
+      }
+    }
+    .slide-menu {
+      position: fixed;
+      top: 0;
+      right: -250px;
+      width: 250px;
+      height: 100%;
+      background-color: rgba(84, 162, 246, 0.95);
+      transition: right 0.3s ease;
+      padding: 1rem;
+      box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+      z-index: 1050;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .slide-menu.active {
+      right: 0;
+    }
+    .slide-menu a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.2rem;
+      padding: 0.5rem;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+      margin-bottom: 0.5rem;
+    }
+    .slide-menu a:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    .slide-menu form {
+      margin-top: 1rem;
+    }
+    .slide-menu .form-control {
+      margin-bottom: 0.5rem;
+    }
+    .slide-menu .btn {
+      background-color: #fff;
+      color: #013e14;
+    }
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: none;
+      z-index: 1040;
+    }
+    .overlay.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand animate__animated animate__bounceInLeft" href="/index">
+      <img src="images/logo.jpeg" alt="logo" style="height: 50px;">
+    </a>
+    <div class="collapse navbar-collapse justify-content-center">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="appointmentsDropdown" role="button" data-toggle="dropdown">
+            Appointment
+          </a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="/new-appointment">New Appointment</a>
+            <a class="dropdown-item" href="/filter-appointments">Total Appointments</a>
+            <a class="dropdown-item" href="/not-booked">Not Booked</a>
+          </div>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="salesDropdown" role="button" data-toggle="dropdown">
+            Sales
+          </a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="/todays-shiftings">Today's Shiftings</a>
+            <a class="dropdown-item" href="/total-bookings">Total Shiftings</a>
+            <a class="dropdown-item" href="/total-sales">Total Sales</a>
+          </div>
+        </li>
+      </ul>
+      <form class="form-inline my-2 my-lg-0 mx-auto">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+      </form>
+      <button class="btn btn-outline-secondary ml-2">Settings</button>
+      <button class="btn btn-outline-danger ml-2" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="container mt-4 animate__animated animate__fadeInUp">
+    <h2 class="mb-4">Today's Shiftings</h2>
+    <form id="filterForm" class="mb-4">
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label for="filterDate">Date</label>
+          <input type="date" class="form-control" id="filterDate" value="">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="filterBranch">Branch</label>
+          <select class="form-control" id="filterBranch">
+            <option value="all">All</option>
+            <option value="Vijayawada">Vijayawada</option>
+            <option value="Vizag">Vizag</option>
+          </select>
+        </div>
+        <div class="form-group col-md-4">
+          <label for="filterStatus">Status</label>
+          <select class="form-control" id="filterStatus">
+            <option value="all">All</option>
+            <option value="saved">Saved</option>
+            <option value="assigned">Assigned</option>
+            <option value="booked">Booked</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+      </div>
+      <button type="button" class="btn btn-primary" onclick="filterAppointments()">Filter</button>
+    </form>
+    <div id="appointmentsList" class="list-group">
+      <!-- Appointments will be dynamically inserted here -->
+    </div>
+  </div>
+
+  <div class="bottom-toolbar d-block d-sm-none">
+    <a href="/index"><i class="fas fa-home"></i></a>
+    <a href="/filter-appointments"><i class="fas fa-calendar-alt"></i></a>
+    <a href="/new-appointment"><i class="fas fa-plus-circle"></i></a>
+    <a href="#" onclick="openMobileMenu()"><i class="fas fa-bars"></i></a>
+  </div>
+
+  <div class="slide-menu" id="slideMenu">
+    <a href="/new-appointment">New Appointment</a>
+    <a href="/filter-appointments">Total Appointments</a>
+    <a href="/not-booked">Not Booked</a>
+    <a href="/view-all-appointments">DataBase</a>
+    <a href="/todays-shiftings">Today's Shiftings</a>
+    <a href="/total-bookings">Total Shiftings</a>
+    <a href="/total-sales">Total Sales</a>
+    <a href="/manage-schedules">Manage Schedules</a>
+    <form class="d-flex mt-3" onsubmit="handleSearch(event)">
+      <input class="form-control me-2" type="search" placeholder="" aria-label="Search" id="searchQuery">
+      <button class="btn btn-outline-light" type="submit">Search</button>
+    </form>
+    <a href="/settings" class="mt-3">Settings</a>
+    <a href="/logout" class="mt-3">Logout</a>
+  </div>
+
+  <div class="overlay" id="overlay" onclick="closeMobileMenu()"></div>
+
+  <!-- Modal for Booking Details -->
+  <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="bookingModalLabel">Update Booking Information</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="bookingForm">
+            <div class="form-group">
+              <label for="advancePayment">Advance Payment</label>
+              <input type="number" class="form-control" id="advancePayment" required>
+            </div>
+            <div class="form-group">
+              <label for="totalBookingCost">Total Booking Cost</label>
+              <input type="number" class="form-control" id="totalBookingCost" required>
+            </div>
+            <div class="form-group">
+              <label for="shiftingDate">Shifting Date</label>
+              <input type="date" class="form-control" id="shiftingDate" required>
+            </div>
+            <input type="hidden" id="appointmentId">
+            <button type="button" class="btn btn-primary" onclick="saveBookingInfo()">Save changes</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Payment Details -->
+  <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="paymentModalLabel">Complete Payment Information</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="paymentForm">
+            <div class="form-group">
+              <label for="advancePaymentMethod">Advance Payment Method</label>
+              <input type="text" class="form-control" id="advancePaymentMethod" required>
+            </div>
+            <div class="form-group">
+              <label for="balancePaymentMethod">Balance Payment Method</label>
+              <input type="text" class="form-control" id="balancePaymentMethod" required>
+            </div>
+            <div class="form-group">
+              <label for="notes">Notes</label>
+              <textarea class="form-control" id="notes" required></textarea>
+            </div>
+            <input type="hidden" id="appointmentIdForPayment">
+            <button type="button" class="btn btn-primary" onclick="savePaymentInfo()">Save changes</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Viewing Amounts -->
+  <div class="modal fade" id="viewAmountsModal" tabindex="-1" aria-labelledby="viewAmountsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="viewAmountsModalLabel">Booking Amount Details</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Advance Payment:</strong> <span id="viewAdvancePayment"></span></p>
+          <p><strong>Total Booking Cost:</strong> <span id="viewTotalBookingCost"></span></p>
+          <p><strong>Remaining Amount:</strong> <span id="viewRemainingAmount"></span></p>
+          <p><strong>Shifting Date:</strong> <span id="viewShiftingDate"></span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Access Denied Modal -->
+  <div class="modal fade" id="accessDeniedModal" tabindex="-1" aria-labelledby="accessDeniedModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="accessDeniedModalLabel">Access Denied</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>You do not have access. Current status of the appointment is <span id="currentStatus"></span>.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for OTP Verification -->
+  <div class="modal fade" id="otpModal" tabindex="-1" aria-labelledby="otpModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="otpModalLabel">OTP Verification</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="otpForm">
+            <div class="form-group">
+              <label for="otp">Enter OTP</label>
+              <input type="text" class="form-control" id="otp" required>
+            </div>
+            <input type="hidden" id="appointmentIdForOtp">
+            <button type="button" class="btn btn-primary" onclick="verifyOtp()">Verify OTP</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Cancellation Reason -->
+  <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="cancelModalLabel">Cancellation Reason</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="cancelForm">
+            <div class="form-group">
+              <label for="cancelReason">Reason for Cancellation</label>
+              <textarea class="form-control" id="cancelReason" required></textarea>
+            </div>
+            <input type="hidden" id="appointmentIdForCancel">
+            <button type="button" class="btn btn-primary" onclick="saveCancelInfo()">Submit Reason</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    function formatDate(dateString) {
+      const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+      return new Date(dateString).toLocaleDateString('en-US', options);
+    }
+
+    function formatDateForURL(dateString) {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function toISTDateString(date) {
+      const istOffset = 5.5 * 60 * 60 * 1000; // IST is +5:30 GMT
+      const istDate = new Date(date.getTime() + istOffset);
+      return istDate.toISOString().split('T')[0];
+    }
+
+    function fetchAppointments() {
+      const today = new Date();
+      const todayIST = toISTDateString(today);
+      document.getElementById('filterDate').value = todayIST;
+
+      fetch('/appointments')
+        .then(response => response.json())
+        .then(data => {
+          const filtered = data.filter(appointment => {
+            const appointmentDateIST = toISTDateString(new Date(appointment.shifting_date));
+            return appointmentDateIST === todayIST && appointment.status === 'booked';
+          });
+          displayAppointments(filtered);
+        })
+        .catch(error => {
+          console.error('Error fetching appointments:', error);
+        });
+    }
+
+    function filterAppointments() {
+      const date = document.getElementById('filterDate').value;
+      const branch = document.getElementById('filterBranch').value;
+      const status = document.getElementById('filterStatus').value;
+
+      fetch('/appointments')
+        .then(response => response.json())
+        .then(data => {
+          const filtered = data.filter(appointment => {
+            const appointmentDateIST = toISTDateString(new Date(appointment.shifting_date));
+            return (!date || appointmentDateIST === date) &&
+                   (branch === 'all' || appointment.branch === branch) &&
+                   (status === 'all' || appointment.status === status);
+          });
+          displayAppointments(filtered);
+        })
+        .catch(error => {
+          console.error('Error filtering appointments:', error);
+        });
+    }
+
+    function displayAppointments(appointments) {
+      const appointmentsList = document.getElementById('appointmentsList');
+      appointmentsList.innerHTML = '';
+
+      if (appointments.length === 0) {
+        appointmentsList.innerHTML = '<p class="text-center">No appointments found</p>';
+        return;
+      }
+
+      appointments.forEach(appointment => {
+        const driverColor = appointment.driver_name ? 'green' : 'red';
+        const driverText = appointment.driver_name || 'Not assigned';
+        const listItem = document.createElement('div');
+        listItem.className = 'list-group-item list-group-item-action flex-column align-items-start animate__animated animate__fadeInUp mb-3';
+        listItem.innerHTML = `
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1"><strong>${appointment.name} (${appointment.type_of_booking})</strong></h5>
+            <large><strong>${formatDate(appointment.shifting_date)}</strong></large>
+          </div>
+          <p class="mb-1">${appointment.address_from || 'N/A'} to ${appointment.address_to || 'N/A'}</p>
+          <small>${appointment.branch} - ${appointment.status}</small>
+          <p class="mb-1" style="color: ${driverColor};">Driver: ${driverText}</p>
+          <div class="mt-2 d-flex justify-content-between">
+            <div>
+              <i class="fas fa-paper-plane mx-2" onclick="sendAppointment(${appointment.id}, '${appointment.phone}', '${appointment.status}')"></i>
+              <i class="fas fa-eye mx-2" onclick="viewAppointment(${appointment.id})"></i>
+              <i class="fas fa-car mx-2" onclick="showDistance('${appointment.address_from}', '${appointment.address_to}')"></i>
+              <i class="fas fa-rupee-sign mx-2" onclick="viewAmounts(${appointment.id})"></i>
+              <button class="btn btn-outline-primary btn-sm mx-2" onclick="manageSchedule('${formatDateForURL(appointment.shifting_date)}', '${appointment.id}')">Manage Schedule</button>
+            </div>
+            <select class="form-control form-control-sm" onchange="showBookingModal(${appointment.id}, this.value)" ${appointment.status === 'cancelled' ? 'disabled' : ''}>
+              <option value="saved" ${appointment.status === 'saved' ? 'selected' : ''}>Saved</option>
+              <option value="assigned" ${appointment.status === 'assigned' ? 'selected' : ''}>Assigned</option>
+              <option value="booked" ${appointment.status === 'booked' ? 'selected' : ''}>Booked</option>
+              ${appointment.status === 'booked' ? '<option value="completed">Completed</option><option value="cancelled">Cancelled</option>' : ''}
+            </select>
+          </div>
+        `;
+        appointmentsList.appendChild(listItem);
+      });
+    }
+
+    function sendAppointment(id, phone, status) {
+      if (status === 'booked' || status === 'completed') {
+        window.location.href = `/send?appointmentId=${id}&customerNumber=${phone}`;
+      } else {
+        document.getElementById('currentStatus').innerText = status;
+        $('#accessDeniedModal').modal('show');
+      }
+    }
+
+    function viewAppointment(id) {
+      window.location.href = `/new-appointment?id=${id}`;
+    }
+
+    function showDistance(addressFrom, addressTo) {
+      const url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(addressFrom)}&destination=${encodeURIComponent(addressTo)}`;
+      window.open(url, '_blank');
+    }
+
+    function goToSettings() {
+      window.location.href = '/settings';
+    }
+
+    function manageSchedule(date, appointmentId) {
+      window.location.href = `/manage-schedules?date=${date}&appointment_id=${appointmentId}`;
+    }
+
+    function viewAmounts(id) {
+      fetch(`/appointments/${id}`)
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('viewAdvancePayment').innerText = data.advance_payment || 'N/A';
+          document.getElementById('viewTotalBookingCost').innerText = data.total_booking_cost || 'N/A';
+          const remainingAmount = (data.total_booking_cost || 0) - (data.advance_payment || 0);
+          document.getElementById('viewRemainingAmount').innerText = remainingAmount;
+          document.getElementById('viewShiftingDate').innerText = formatDate(data.shifting_date) || 'N/A';
+
+          $('#viewAmountsModal').modal('show');
+        })
+        .catch(error => {
+          console.error('Error fetching appointment amounts:', error);
+        });
+    }
+
+    function showBookingModal(id, status) {
+      if (status === 'booked') {
+        document.getElementById('appointmentId').value = id;
+        fetch(`/appointments/${id}`)
+          .then(response => response.json())
+          .then(data => {
+            document.getElementById('advancePayment').value = data.advance_payment || '';
+            document.getElementById('totalBookingCost').value = data.total_booking_cost || '';
+            document.getElementById('shiftingDate').value = data.shifting_date ? new Date(data.shifting_date).toISOString().split('T')[0] : '';
+            $('#bookingModal').modal('show');
+          })
+          .catch(error => {
+            console.error('Error fetching appointment data:', error);
+          });
+      } else if (status === 'completed') {
+        document.getElementById('appointmentIdForPayment').value = id;
+        $('#paymentModal').modal('show');
+      } else if (status === 'cancelled') {
+        sendOtpForCancellation(id);
+      } else {
+        fetch(`/appointments/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ status }),
+        })
+        .then(response => response.json())
+        .then(data => {
+          alert('Status updated!');
+          fetchAppointments(); // Refresh the list after status update
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+      }
+    }
+
+    function sendOtpForCancellation(id) {
+      fetch(`/send-otp-for-cancellation/${id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById('appointmentIdForOtp').value = id;
+          $('#otpModal').modal('show');
+        } else {
+          alert('Error sending OTP for cancellation');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    }
+
+    function verifyOtp() {
+      const id = document.getElementById('appointmentIdForOtp').value;
+      const otp = document.getElementById('otp').value;
+
+      fetch(`/verify-otp-for-cancellation/${id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ otp })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          $('#otpModal').modal('hide');
+          document.getElementById('appointmentIdForCancel').value = id;
+          $('#cancelModal').modal('show');
+        } else {
+          alert('Invalid OTP');
+        }
+      })
+      .catch(error => {
+        console.error('Error verifying OTP:', error);
+      });
+    }
+
+    function saveCancelInfo() {
+      const id = document.getElementById('appointmentIdForCancel').value;
+      const cancelReason = document.getElementById('cancelReason').value;
+
+      fetch(`/appointments/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: 'cancelled', cancel_reason: cancelReason })
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert('Appointment cancelled!');
+        $('#cancelModal').modal('hide');
+        fetchAppointments(); // Refresh the list after status update
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+    }
+
+    function saveBookingInfo() {
+      const id = document.getElementById('appointmentId').value;
+      const advancePayment = document.getElementById('advancePayment').value;
+      const totalBookingCost = document.getElementById('totalBookingCost').value;
+      const shiftingDate = document.getElementById('shiftingDate').value;
+
+      fetch(`/appointments/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: 'booked', advance_payment: advancePayment, total_booking_cost: totalBookingCost, shifting_date: shiftingDate }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert('Status, amounts, and shifting date updated!');
+        $('#bookingModal').modal('hide');
+        fetchAppointments(); // Refresh the list after status update
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+    }
+
+    function savePaymentInfo() {
+      const id = document.getElementById('appointmentIdForPayment').value;
+      const advancePaymentMethod = document.getElementById('advancePaymentMethod').value;
+      const balancePaymentMethod = document.getElementById('balancePaymentMethod').value;
+      const notes = document.getElementById('notes').value;
+
+      fetch(`/appointments/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: 'completed', advance_payment_method: advancePaymentMethod, balance_payment_method: balancePaymentMethod, notes }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert('Status updated to completed!');
+        $('#paymentModal').modal('hide');
+        fetchAppointments(); // Refresh the list after status update
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+    }
+
+    function logout() {
+      fetch('/logout')
+        .then(response => {
+          if (response.ok) {
+            window.location.href = '/';
+          } else {
+            alert('Logout failed');
+          }
+        })
+        .catch(error => {
+          console.error('Error logging out:', error);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', fetchAppointments);
+  </script>
+</body>
+</html>

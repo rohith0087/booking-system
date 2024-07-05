@@ -1,0 +1,22 @@
+{
+  "1": {
+    "appointmentId": "1",
+    "customerName": "Ramesh",
+    "messages": [
+      "2024-06-29T05:42:45.565Z: You are scheduled to shift from LIC COLONY, Vijayawada  to Marripalem , vizag for Ramesh on 2024-06-30",
+      "2024-06-29T05:42:45.567Z: Ravi has been assigned for shifting on 2024-06-30 for Ramesh, from LIC COLONY, Vijayawada  to Marripalem , vizag",
+      "2024-06-29T05:42:45.580Z: Ravi has been assigned as a driver for your shifting on 2024-06-30. Here is the driver contact: +919441471234",
+      "2024-06-29T05:43:04.151Z: Please leave a review for our services: https://shorturl.at/bNNAj"
+    ]
+  },
+  "2": {
+    "appointmentId": "2",
+    "customerName": "Naga Mani",
+    "messages": [
+      "2024-06-29T16:17:03.277Z: Ravi has been assigned for shifting on 2024-06-30 for Naga Mani, from Ganesh Residancy ,Lic Colony Vijayawada to Marripalam , Vizag",
+      "2024-06-29T16:17:03.288Z: Ravi has been assigned as a driver for your shifting on 2024-06-30. Here is the driver contact: +919441471234",
+      "2024-06-29T16:17:03.312Z: You are scheduled to shift from Ganesh Residancy ,Lic Colony Vijayawada to Marripalam , Vizag for Naga Mani on 2024-06-30",
+      "2024-06-29T16:17:40.595Z: Please leave a review for our services: https://shorturl.at/bNNAj"
+    ]
+  }
+}

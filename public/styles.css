@@ -1,0 +1,222 @@
+body {
+  background: linear-gradient(120deg, rgb(117, 70, 234) 0%, #e5d4ef 100%);
+  font-family: Arial, sans-serif;
+  color: #0b0b0b;
+}
+
+.navbar {
+  background: #0056b3; /* Darker blue */
+  border-bottom: 2px solid #cabebe;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  color: #0d1835;
+  transition: transform 0.3s ease-in-out;
+}
+
+.navbar-brand:hover {
+  transform: scale(1.1);
+}
+
+.navbar-nav .nav-link {
+  color: #ffffff;
+}
+
+.navbar-nav .dropdown-menu {
+  border-radius: 10px;
+  background-color: #e3f2fd;
+}
+
+.form-control {
+  border-radius: 10px;
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.form-control:focus {
+  box-shadow: 0 0 10px rgba(79, 156, 237, 0.5);
+}
+
+.btn {
+  border-radius: 10px;
+  transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+}
+
+.container-box {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.box {
+  width: 30%;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.box:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(0, 123, 255, 0.3);
+}
+
+.box h4 {
+  color: #007bff;
+}
+
+.reminder-box {
+  margin-top: 20px;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.reminder-box:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(0, 123, 255, 0.3);
+}
+
+.fab-buttons {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+}
+
+.fab-buttons .fab {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #007bff;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.fab-buttons .fab:hover {
+  background: #0056b3;
+  transform: rotate(45deg);
+}
+
+.fab-buttons .fab-options {
+  display: none;
+  flex-direction: column;
+  margin-top: 10px;
+}
+
+.fab-buttons .fab-options .fab {
+  margin-top: 10px;
+}
+
+/* Form container styles */
+form {
+  max-width: 600px;
+  margin: auto;
+  background: #ffffff;
+  padding: 5px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 123, 255, 0.3);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+form:hover {
+  transform: scale(1.02);
+}
+
+h2 {
+  text-align: center;
+}
+
+/* Styles for appointments list */
+.list-group-item {
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  margin-bottom: 15px; /* Added gap between items */
+}
+
+.list-group-item:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 20px rgba(0, 123, 255, 0.3);
+}
+
+.list-group-item .fa {
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.list-group-item .fa:hover {
+  transform: scale(1.2);
+  color: #007bff;
+}
+
+/* Additional styles for centering elements */
+.navbar-collapse {
+  justify-content: center !important;
+}
+
+/*reminder side 
+
+.reminder-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px; /* Added gap between items */
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.reminder-item:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 20px rgba(0, 123, 255, 0.3);
+}
+
+.reminder-flag {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.flag-red {
+  background-color: red;
+}
+
+.flag-blue {
+  background-color: blue;
+}
+
+.flag-green {
+  background-color: green;
+}
+
+.reminder-text {
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+.reminder-date {
+  margin-right: 10px;
+}
+
+.reminder-completed {
+  display: flex;
+  align-items: center;
+}

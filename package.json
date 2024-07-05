@@ -1,0 +1,33 @@
+{
+  "name": "booking-system",
+  "version": "1.0.0",
+  "description": "An Express application for appointment management with Twilio integration",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Your Name",
+  "license": "ISC",
+  "dependencies": {
+    "@capacitor/android": "^6.1.0",
+    "@capacitor/cli": "^6.1.0",
+    "@capacitor/core": "^6.1.0",
+    "body-parser": "^1.19.0",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "express-useragent": "^1.0.15",
+    "fs": "0.0.1-security",
+    "nodemailer": "^6.9.14",
+    "path": "^0.12.7",
+    "pg": "^8.12.0",
+    "twilio": "^5.2.0",
+    "user-agent": "^1.0.4"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

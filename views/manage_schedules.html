@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Driver Schedules</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .container {
+      max-width: 900px;
+      margin-top: 20px;
+    }
+    .form-inline .form-control {
+      margin-right: 10px;
+    }
+    .table-container {
+      max-height: 400px;
+      overflow-y: auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .bg-early-morning {
+      background-color: #f8f9fa;
+    }
+    .bg-morning, .bg-afternoon, .bg-evening, .bg-night {
+      background-color: #fff;
+    }
+    .form-inline {
+      background-color: #fff;
+      padding: 10px 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+    }
+    .form-inline .btn {
+      margin-top: 10px;
+    }
+    .form-control.custom-height {
+      height: 40px;
+    }
+    .modal-content {
+      border-radius: 10px;
+    }
+    .modal-header {
+      border-bottom: none;
+    }
+    .search-container {
+      background-color: #fff;
+      padding: 15px 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .search-container h4 {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand animate__animated animate__bounceInLeft" href="/index">
+      <img src="images/logo.jpeg" alt="logo" style="height: 50px;">
+    </a>
+    <div class="collapse navbar-collapse justify-content-center">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="appointmentsDropdown" role="button" data-toggle="dropdown">
+            Appointment
+          </a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="/new-appointment">New Appointment</a>
+            <a class="dropdown-item" href="/filter-appointments">Total Appointments</a>
+            <a class="dropdown-item" href="/not-booked">Not Booked</a>
+            <a class="dropdown-item" href="/view-all-appointments">Database</a>
+          </div>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="salesDropdown" role="button" data-toggle="dropdown">
+            Sales
+          </a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="/todays-Shiftings">Today's Shiftings</a>
+            <a class="dropdown-item" href="/total-bookings">Total Shiftings</a>
+            <a class="dropdown-item" href="/total-sales">Total Sales</a>
+          </div>
+        </li>
+      </ul>
+      <form class="form-inline my-2 my-lg-0 mx-auto">
+        <input class="form-control mr-sm-2 custom-height" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+      </form>
+      <button class="btn btn-outline-secondary ml-2" onclick="goToSettings()">Settings</button>
+      <button class="btn btn-outline-danger ml-2" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="container mt-4 animate__animated animate__fadeInUp">
+    <div class="mb-4 search-container">
+      <h4>Filter Schedule</h4>
+      <form id="filterScheduleForm" class="form-inline mb-3">
+        <input type="number" class="form-control mr-2 custom-height" id="filterDriverId" placeholder="Driver ID">
+        <input type="date" class="form-control mr-2 custom-height" id="filterScheduleDate">
+        <div class="form-group">
+          <button type="button" class="btn btn-secondary mr-2" onclick="filterSchedules()">View</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="mb-4 search-container">
+      <h4>Add Schedule</h4>
+      <form id="addScheduleForm" class="form-inline mb-3">
+        <input type="number" class="form-control mr-2 custom-height" id="addDriverId" placeholder="Driver ID">
+        <input type="date" class="form-control mr-2 custom-height" id="addScheduleDate">
+        <select class="form-control mr-2 custom-height" id="addTimeSlot">
+          <option value="">Select Time Slot</option>
+          <option value="Early Morning">Early Morning</option>
+          <option value="Morning">Morning</option>
+          <option value="Afternoon">Afternoon</option>
+          <option value="Evening">Evening</option>
+          <option value="Night">Night</option>
+        </select>
+        <input type="number" class="form-control mr-2 custom-height" id="addAppointmentId" placeholder="Appointment ID">
+        <div class="form-group">
+          <button type="button" class="btn btn-primary mr-2" onclick="addDriverSchedule()">Add Schedule</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="table-container mt-4">
+      <h4>Driver Schedules</h4>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Driver ID</th>
+            <th>Schedule Date</th>
+            <th>Time Slot</th>
+            <th>Appointment ID</th>
+            <th>Details</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="schedulesTableBody">
+          <!-- Schedules data will be inserted here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="errorModalLabel">Error</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="errorModalBody">
+          <!-- Error message will be inserted here -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const dateParam = urlParams.get('date');
+      const appointmentIdParam = urlParams.get('appointment_id');
+      
+      if (dateParam) {
+        document.getElementById('addScheduleDate').value = dateParam;
+        document.getElementById('filterScheduleDate').value = dateParam;
+      }
+      if (appointmentIdParam) {
+        document.getElementById('addAppointmentId').value = appointmentIdParam;
+      }
+
+      loadDriverSchedules();
+    });
+
+    function loadDriverSchedules(filter = {}) {
+      let url = '/driver-schedules';
+      if (Object.keys(filter).length > 0) {
+        const params = new URLSearchParams(filter).toString();
+        url += `?${params}`;
+      }
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          const tableBody = document.getElementById('schedulesTableBody');
+          tableBody.innerHTML = '';
+          data.forEach(schedule => {
+            const row = document.createElement('tr');
+            let bgClass = '';
+            switch (schedule.time_slot) {
+              case 'Early Morning': bgClass = 'bg-early-morning'; break;
+              case 'Morning': bgClass = 'bg-morning'; break;
+              case 'Afternoon': bgClass = 'bg-afternoon'; break;
+              case 'Evening': bgClass = 'bg-evening'; break;
+              case 'Night': bgClass = 'bg-night'; break;
+            }
+            row.classList.add(bgClass);
+            row.innerHTML = `
+              <td>${schedule.id}</td>
+              <td>${schedule.driver_id}</td>
+              <td>${formatDate(schedule.date)}</td>
+              <td>${schedule.time_slot}</td>
+              <td>${schedule.appointment_id}</td>
+              <td><button class="btn btn-info btn-sm" onclick="goToTotalShiftings('${formatDateURL(schedule.date)}', '${schedule.appointment_id}')">Go</button></td>
+              <td>
+                <button class="btn btn-danger btn-sm" onclick="deleteDriverSchedule(${schedule.id})">Delete</button>
+              </td>
+            `;
+            tableBody.appendChild(row);
+          });
+        })
+        .catch(error => {
+          showError('Error loading schedules: ' + error.message);
+        });
+    }
+
+    function addDriverSchedule() {
+      const driverId = document.getElementById('addDriverId').value;
+      const scheduleDate = document.getElementById('addScheduleDate').value;
+      const timeSlot = document.getElementById('addTimeSlot').value;
+      const appointmentId = document.getElementById('addAppointmentId').value;
+
+      if (!driverId || !scheduleDate || !timeSlot || !appointmentId) {
+        showError('Please fill in all details to add a schedule.');
+        return;
+      }
+
+      fetch('/driver-schedules', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ driver_id: driverId, date: scheduleDate, time_slot: timeSlot, appointment_id: appointmentId }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          showError(data.error);
+        } else {
+          alert(data.message);
+          loadDriverSchedules();
+        }
+      })
+      .catch(error => {
+        showError('Error adding schedule: ' + error.message);
+      });
+    }
+
+    function filterSchedules() {
+      const driverId = document.getElementById('filterDriverId').value;
+      const scheduleDate = document.getElementById('filterScheduleDate').value;
+      const filter = {};
+
+      if (driverId) filter.driver_id = driverId;
+      if (scheduleDate) filter.date = scheduleDate;
+
+      loadDriverSchedules(filter);
+    }
+
+    function goToTotalShiftings(date, appointmentId) {
+      window.location.href = `/total-bookings?date=${date}&appointment_id=${appointmentId}`;
+    }
+
+    function deleteDriverSchedule(id) {
+      if (confirm('Are you sure you want to delete this schedule?')) {
+        fetch(`/driver-schedules/${id}`, {
+          method: 'DELETE',
+        })
+        .then(response => response.json())
+        .then(data => {
+          alert(data.message);
+          loadDriverSchedules();
+        })
+        .catch(error => {
+          showError('Error deleting schedule: ' + error.message);
+        });
+      }
+    }
+
+    function formatDate(dateString) {
+      if (!dateString) return 'N/A';
+      const date = new Date(dateString);
+      const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+      return date.toLocaleDateString(undefined, options);
+    }
+
+    function formatDateURL(dateString) {
+      if (!dateString) return 'N/A';
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function goToSettings() {
+      window.location.href = '/settings';
+    }
+
+    function logout() {
+      fetch('/logout')
+        .then(response => {
+          if (response.ok) {
+            window.location.href = '/';
+          } else {
+            showError('Logout failed');
+          }
+        })
+        .catch(error => {
+          showError('Error logging out: ' + error.message);
+        });
+    }
+
+    function showError(message) {
+      document.getElementById('errorModalBody').innerText = message;
+      const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+      errorModal.show();
+    }
+  </script>
+</body>
+</html>

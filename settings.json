@@ -1,0 +1,13 @@
+{
+    "twilioPhoneNumber": "+14788453473",
+    "whatsappPhoneNumber": "whatsapp:+919866566166",
+    "ownerNumber": "+919848110155",
+    "salesNumbers": {
+      "Vijayawada": "+919441471234",
+      "Vizag": "+919441471234"
+    },
+    "accountSid": "ACdbd85501a0f0f287cb53d7e4ad8f1124",
+    "authToken": "8cc24d224bad7669972f8399995b042a",
+    "messagingServiceSid": "MGc12bb1dfae46602886b945749b30ea41"
+  }
+  
