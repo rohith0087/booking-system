@@ -82,12 +82,11 @@
     .bottom-toolbar a i {
       font-size: 1.5rem;
     }
-    .bottom-toolbar a:not(:last-child) {
-      margin-right: 5rem;
-    }
-    .bottom-toolbar a:first-child {
-      margin-left: 1rem;
-    }
+    .bottom-toolbar a:nth-child(2),
+    .bottom-toolbar a:nth-child(3) {
+        margin: 0 1rem;
+      }
+      
     @media (min-width: 769px) {
       .bottom-toolbar {
         display: none;
@@ -250,7 +249,7 @@
     </form>
   </div>
 
-  <div class="bottom-toolbar d-block d-sm-none">
+  <div class="bottom-toolbar">
     <a href="/filter-appointments"><i class="fas fa-calendar-alt"></i></a>
     <a href="/total-bookings"><i class="fas fa-truck"></i></a>
     <a href="/index"><i class="fas fa-home"></i></a>

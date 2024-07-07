@@ -38,17 +38,16 @@
       text-align: center;
       color: #007bff;
       text-decoration: none;
-      flex: 1;
+      flex-grow: 1;
     }
     .bottom-toolbar a i {
       font-size: 1.5rem;
     }
-    .bottom-toolbar a:not(:last-child) {
-      margin-right: 5rem;
+    .bottom-toolbar a:nth-child(2),
+    .bottom-toolbar a:nth-child(3) {
+        margin: 0 1rem;
     }
-    .bottom-toolbar a:first-child {
-      margin-left: 1rem;
-    }
+    
     @media (min-width: 769px) {
       .bottom-toolbar {
         display: none;
@@ -106,6 +105,18 @@
     }
     .overlay.active {
       display: block;
+    }
+    .modal-dialog {
+      display: flex;
+      align-items: center;
+      min-height: calc(100% - 1rem);
+    }
+    .modal-content {
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .modal-body {
+      word-wrap: break-word;
     }
   </style>
 </head>
@@ -180,9 +191,29 @@
     </div>
   </div>
 
+  <!-- Customer Details Modal -->
+  <div class="modal fade" id="customerDetailsModal" tabindex="-1" aria-labelledby="customerDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="customerDetailsModalLabel">Customer Details</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Name:</strong> <span id="modalCustomerName"></span></p>
+          <p><strong>Phone Number:</strong> <span id="modalCustomerPhone"></span></p>
+          <p><strong>Address From:</strong> <span id="modalAddressFrom"></span></p>
+          <p><strong>Address To:</strong> <span id="modalAddressTo"></span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Booking Modal -->
   <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="bookingModalLabel">Update Booking Information</h5>
@@ -214,7 +245,7 @@
 
   <!-- Payment Modal -->
   <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="paymentModalLabel">Payment Details</h5>
@@ -246,7 +277,7 @@
 
   <!-- Access Denied Modal -->
   <div class="modal fade" id="accessDeniedModal" tabindex="-1" aria-labelledby="accessDeniedModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="accessDeniedModalLabel">Access Denied</h5>
@@ -264,7 +295,7 @@
     </div>
   </div>
 
-  <div class="bottom-toolbar d-block d-sm-none">
+  <div class="bottom-toolbar">
     <a href="/index"><i class="fas fa-home"></i></a>
     <a href="/total-bookings"><i class="fas fa-truck"></i></a>
     <a href="/new-appointment"><i class="fas fa-plus-circle"></i></a>
@@ -347,7 +378,7 @@
         listItem.className = 'list-group-item list-group-item-action flex-column align-items-start animate__animated animate__fadeInUp mb-3';
         listItem.innerHTML = `
           <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-1"><strong>#${appointment.id} - ${appointment.name} (${appointment.type_of_booking})</strong></h5>
+            <h5 class="mb-1"><strong>#${appointment.id} - <a href="#" onclick="showCustomerDetails('${appointment.name}', '${appointment.phone}', '${appointment.address_from}', '${appointment.address_to}')">${appointment.name}</a> (${appointment.type_of_booking})</strong></h5>
             <large><strong>${formatDate(appointment.date)}</strong></large>
           </div>
           <p class="mb-1">${appointment.address_from || 'N/A'} to ${appointment.address_to || 'N/A'}</p>
@@ -640,6 +671,14 @@
 
     function redirectToTotalBookings(id, date) {
       window.location.href = `/total-bookings?date=${date}&appointment_id=${id}`;
+    }
+
+    function showCustomerDetails(name, phone, addressFrom, addressTo) {
+      document.getElementById('modalCustomerName').textContent = name;
+      document.getElementById('modalCustomerPhone').textContent = phone;
+      document.getElementById('modalAddressFrom').textContent = addressFrom;
+      document.getElementById('modalAddressTo').textContent = addressTo;
+      $('#customerDetailsModal').modal('show');
     }
   </script>
 </body>

@@ -1,5 +1,6 @@
 {
   "appId": "com.chowdarypackersandmovers.app",
-  "appName": "booking-system",
-  "webDir": "views"
+  "appName": "Chowdary Packers and Movers",
+  "webDir": "views",
+  "bundledWebRuntime": false
 }

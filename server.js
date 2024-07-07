@@ -188,6 +188,11 @@ app.get('/total-sales', isAuthenticated,checkRole('admin','user'), (req, res) =>
   res.sendFile(path.join(__dirname, 'views', 'total-sales.html'));
 });
 
+app.get('/calendar', isAuthenticated,checkRole('admin','user'), (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'calendar.html'));
+});
+
+
 app.get('/view-all-appointments', isAuthenticated,checkRole('admin','user'), (req, res, next) => {
   console.log('Request received for /view-all-appointments');
   res.sendFile(path.join(__dirname, 'views', 'view-all-appointments.html'), (err) => {
@@ -239,6 +244,29 @@ const logChatMessage = async (appointmentId, message, customerName) => {
   const values = [appointmentId, customerName, message, new Date()];
   await pool.query(query, values);
 };
+
+app.get('/api/bookings', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+        date_trunc('day', date) as date,
+        COUNT(*) FILTER (WHERE type_of_booking = 'local' AND status = 'booked') AS local_count,
+        COUNT(*) FILTER (WHERE type_of_booking = 'intercity' AND status = 'booked') AS intercity_count
+      FROM 
+        appointments
+      WHERE 
+        status = 'booked'
+      GROUP BY 
+        date_trunc('day', date)
+    `);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching bookings:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 
 // Function to send message
 const sendMessage = (method, to, contentSid, contentVariables) => {
@@ -935,6 +963,7 @@ app.get('/drivers', isAuthenticated, async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 // Add a driver
 app.post('/drivers', isAuthenticated,checkRole('admin','user'), async (req, res) => {
