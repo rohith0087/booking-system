@@ -712,5 +712,25 @@
 
     setInterval(updateClock, 1000);
   </script>
+
+<script>
+  function keepSessionAlive() {
+    setInterval(() => {
+      fetch('/keep-alive', {
+        method: 'GET',
+        credentials: 'include' // Include cookies in the request
+      }).then(response => {
+        if (response.ok) {
+          console.log('Session is active');
+        } else {
+          console.log('Session has expired');
+        }
+      });
+    }, 10 * 60 * 1000); // Ping the server every 10 minutes
+  }
+
+  document.addEventListener('DOMContentLoaded', keepSessionAlive);
+</script>
+
 </body>
 </html>

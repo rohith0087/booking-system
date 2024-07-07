@@ -58,7 +58,9 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: false }
+  cookie: { 
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours in milliseconds
+  }
 }));
 
 app.use(useragent.express());
@@ -115,6 +117,12 @@ app.use((req, res, next) => {
   };
   userActionLogs.push(actionLog);
   fs.writeFileSync('userActionLogs.json', JSON.stringify(userActionLogs, null, 2));
+  
+  if (req.session) {
+    req.session._garbage = Date();
+    req.session.touch();
+  }
+
   next();
 });
 
@@ -190,6 +198,14 @@ app.get('/total-sales', isAuthenticated,checkRole('admin','user'), (req, res) =>
 
 app.get('/calendar', isAuthenticated,checkRole('admin','user'), (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'calendar.html'));
+});
+
+app.get('/keep-alive', (req, res) => {
+  if (req.session.user) {
+    res.status(200).send('Session is active');
+  } else {
+    res.status(401).send('Session has expired');
+  }
 });
 
 
